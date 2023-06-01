@@ -1,6 +1,6 @@
 # App Bibliotecca
 
-App de uma bibblioteca onde há possibilidade para: emprestar, cadastrar, excluir e avaliar os sus livros.
+App de uma biblioteca onde há possibilidade para: emprestar, cadastrar, excluir e avaliar os seus livros.
 
 - login: pedro@email.com
 - senha: 12345678
