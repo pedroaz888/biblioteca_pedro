@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="pt-br">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" >
+    {% block 'head' %}{%endblock%} 
+
+    <title>{% block 'titulo' %} {% endblock %}</title>
+
+  </head>
+  <body>
+    <nav class="navbar navbar-dark bg-dark">
+        <a class="navbar-brand" href="{% url 'home' %}">Projeto biblioteca</a>
+        {% if usuario_logado  %}
+        <div style="margin-right: -800px;"class="dropdown">
+          <button  class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            Menu
+          </button>
+          <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+            <button type="button" class="dropdown-item" data-toggle="modal" data-target="#exampleModal">Controle</button>
+            <a href={% url 'seus_emprestimos' %} class="dropdown-item">Seus empréstimo</a>
+            <a class="dropdown-item">Total livros: {{total_livros}}</a>
+          </div>
+        </div>
+            
+          <a href={% url 'sair' %} class="btn btn-dark">Sair</a>
+        {% endif %}
+      </nav>
+
+   {% block 'conteudo'%} {%  endblock  %}
+
+      {% if usuario_logado %}
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js" ></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">Controle:</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">   
+
+            <button style="margin-left: 10px;"  onclick="mostrar_form(1)" class="btn btn-info">Categoria</button>
+            <button style="margin-left: 10px;" onclick="mostrar_form(2)" class="btn btn-info">Livro</button>
+            <button style="margin-left: 10px;" onclick="mostrar_form(3)" class="btn btn-secondary">Emprestimos</button>
+            <button style="margin-left: 10px;" onclick="mostrar_form(4)" class="btn btn-secondary">Devolução</button>
+
+          </br>
+          <hr>
+        </br>
+       
+            <div style="display: none" id="livro">
+            <form action="{% url 'cadastrar_livro' %}" method="POST" enctype="multipart/form-data">
+                  {% csrf_token %}
+                <table>
+                  {{form.as_table}}
+                </table></br>
+                <input type="submit" class="btn btn-success" value="Cadastrar">
+            </form>
+          </div>  
+
+          <div style="display: none" id="categoria">
+              <form action="{% url 'cadastrar_categoria' %}" method="POST">
+                 {% csrf_token %}
+                <table>
+                {{form_categoria.as_table}}
+              </table></br>
+              <input type="hidden" name= "usuario" value="{{usuario_logado}}"></input>
+              <input type="submit" class="btn btn-success" value="Cadastrar">
+              </form>             
+          </div>
+
+          <div style="display: none" id="emprestimos">          
+               <button onclick="exibe_input_emprestado(1)" class="btn btn-outline-secondary">Usuario cadastrado</button>
+               <button onclick="exibe_input_emprestado(2)" class="btn btn-outline-secondary">Usuario sem cadastrado</button>
+          </br>
+        </br>
+              <form id="form_emprestimo" action="{% url 'cadastro_emprestimo' %}" method="POST"> {% csrf_token %}
+                <select id="nome_cadastrado"class="form-control" name= "nome_cadastrado">
+
+                      {% for usuario in usuarios %}
+                          <option value="{{usuario.id}}">{{usuario.nome}}</option>
+                      {% endfor %}
+                </select>
+              </br>
+              <input style="display: none;" id="nome_sem_cadastro" type="text" placeholder="digite o nome.." name="nome_sem_cadastro" class="form-control"></input>
+            </br>
+          
+
+              <select class="form-control" name= "livro_emprestado">
+                {% for livro in livros_emprestar %}
+                    <option value="{{livro.id}}">{{livro.nome}}</option>
+                {% endfor %}
+          </select>
+        </br>
+      </br>
+              <input class="btn btn-success"type="submit" value="Emprestar">
+            </form>
+          </div>
+
+          <div style="display: none;" id="devolucao">
+              <form action="{% url 'livro_devolvido' %}" method="POST">{% csrf_token %}
+                <select class="form-control" name = "id_livro_devolvido">
+                  {% for livro in livros_emprestados %}
+                      <option value = "{{livro.id}}">{{livro.nome}}</option>
+                  {% endfor %}
+                </select></br> 
+                
+                <input type="submit" class="btn btn-warning" value="Devolvido">
+              </form>
+          </div>
+        
+ 
+    {% endif %}
+  
+    <script>
+          function mostrar_form(v1){
+            categoria = document.getElementById('categoria')
+            livro = document.getElementById('livro')
+            emprestimo = document.getElementById('emprestimos')
+            devolucao = document.getElementById('devolucao')
+
+          
+            if(v1 == 1){
+              categoria.style.display = 'block';
+              livro.style.display = 'none';
+              emprestimos.style.display = 'none';
+              devolucao.style.display = "none";
+
+            }else if (v1 == 2){
+              livro.style.display = 'block';
+              categoria.style.display = 'none';
+              emprestimos.style.display = 'none'
+              devolucao.style.display = "none";
+
+
+            }else if(v1 == 3){
+              emprestimos.style.display = 'block'
+              categoria.style.display = 'none';
+              livro.style.display = 'none';
+              devolucao.style.display = "none";
+              
+            }else if (v1 ==4){
+              devolucao.style.display = "block";
+              emprestimos.style.display = 'none'
+              categoria.style.display = 'none';
+              livro.style.display = 'none';
+              
+
+            }
+        }
+
+        function exibe_input_emprestado(v1){
+
+          if(v1==1){
+            document.getElementById('nome_cadastrado').style.display = "block";
+            document.getElementById('nome_sem_cadastro').style.display = "none";
+
+          }else{
+            document.getElementById('nome_sem_cadastro').style.display = "block";
+            document.getElementById('nome_cadastrado').style.display = "none";
+          
+
+        }
+      }
+    </script>
+
+  </body>
+</html>

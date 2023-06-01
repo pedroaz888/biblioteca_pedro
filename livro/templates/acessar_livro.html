@@ -1,0 +1,154 @@
+{% extends 'base.html' %}
+{% load filtros %}
+
+{% block 'conteudo' %} <!-- Modal -->
+<div class="modal fade" id="exampleModal2" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel2" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel2">EXCLUIR ?</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <h6>Você tem certeza que deseja excluir esse livro?</h6></br>
+        <a href="{% url 'excluir_livro' id_livro %}" class="btn btn-danger btn-md">SIM</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div class="container">
+            </br>
+            <form action="{% url 'alterar_livro' %}" method="POST">
+                {% csrf_token %} 
+                <input type="hidden" value="{{livro.id}}" name="livro_id">
+            <p>
+                <label>Nome do livro:</label>   
+                <input style="width:30%" class="form-control" type="text" value="{{livro.nome}}" name= "nome_livro">
+            </p>
+            <p>
+                <label>Autor:</label>   
+                <input style="width:30%" class="form-control" type="text" value="{{livro.autor}}"name= "autor">
+            </p>
+
+            <label>Categoria:</label>
+            <select style="width:20%" class="form-control"  name="categoria_id">
+            {% for i in categoria_livro %}
+            {% if livro.categoria.nome == i.nome %}
+                <option value="{{i.id}}"selected> {{i}} </option>
+                {% else %}
+                <option value="{{i.id}}"> {{i}} </option>
+                {% endif %}
+            {%endfor %}
+            
+        </select>   </br>
+
+            <p>
+                <label>Data de cadastro: </label>  
+                <p>{{livro.data_cadastro}}   </p>       
+            </p></br>
+            
+            <label>Emprestado: </label>
+             {% if livro.emprestado %} 
+            
+             <svg style="color:red;" xmlns="http://www.w3.org/2000/svg" width="26" height="26" fill="currentColor" class="bi bi-bag-check-fill" viewBox="0 0 16 16">
+              <path fill-rule="evenodd" d="M10.5 3.5a2.5 2.5 0 0 0-5 0V4h5v-.5zm1 0V4H15v10a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V4h3.5v-.5a3.5 3.5 0 1 1 7 0zm-.646 5.354a.5.5 0 0 0-.708-.708L7.5 10.793 6.354 9.646a.5.5 0 1 0-.708.708l1.5 1.5a.5.5 0 0 0 .708 0l3-3z"/>
+            </svg>
+        
+            {% else %}
+
+            <svg style="color:green;" xmlns="http://www.w3.org/2000/svg" width="26" height="26" fill="currentColor" class="bi bi-bag-x-fill" viewBox="0 0 16 16">
+              <path fill-rule="evenodd" d="M10.5 3.5a2.5 2.5 0 0 0-5 0V4h5v-.5zm1 0V4H15v10a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V4h3.5v-.5a3.5 3.5 0 1 1 7 0zM6.854 8.146a.5.5 0 1 0-.708.708L7.293 10l-1.147 1.146a.5.5 0 0 0 .708.708L8 10.707l1.146 1.147a.5.5 0 0 0 .708-.708L8.707 10l1.147-1.146a.5.5 0 0 0-.708-.708L8 9.293 6.854 8.146z"/>
+            </svg>
+        
+            {% endif %}
+        </br></br>
+        
+
+        <input type="submit" class="btn btn-success btn-lg" value="Salvar">
+    </form></br>
+    <button type="button" class="btn btn-danger btn-lg" data-toggle="modal" data-target="#exampleModal2">
+        Excluir
+      </button>
+    <hr>
+    <h3>Histórico de emprestimos</h3>
+    <table class="table table-striped">
+        <thead>
+          <tr>
+            <th scope="col">Nome</th>
+            <th scope="col">Data do emprestimo</th>
+            <th scope="col">Data de devolução</th>
+            <th scope="col">Duração de tempo emprestado</th>
+            <th scope="col">Avaliação</th>
+          </tr>
+        </thead>
+        <tbody>
+            {% for i in emprestimos %}
+            <tr>
+                {% if i.nome_sem_cadastro == None %}
+                    <th>{{i.nome_cadastrado}}</th>
+                {% else %}
+                    <th>{{i.nome_sem_cadastro}}</th>
+                {% endif %}
+                
+                <td>{{i.data_emprestimo}}</td>
+                <td>{{i.data_devolucao}}</td>
+                <td>{{i.data_devolucao|calculo_duracao:i.data_emprestimo  }}</td>         
+                {% if i.avaliacao == None %}
+                <td>
+                    <button onclick="avaliacao({{i.id}})"class="btn btn-info" data-toggle="modal" data-target="#exampleModal1" data-emprestimo={{i.id}}>Avalie</button>
+                </td>
+                {% else %}
+                 <td> {{i.avaliacao}} </td>
+                {% endif %}
+                </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+</div>
+
+
+<div class="modal fade" id="exampleModal1" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Como está o estado do livro?</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+       <form action="{% url 'processa_avaliacao' %}" method="POST"> {% csrf_token %}
+        <input type="hidden" name="id_livro" value="{{id_livro}}">
+        <input  type="hidden" name="id_emprestimo" id="id_emprestimo">
+            <select class="form-control" name = "opcoes">
+                <option value="P">Péssimo</option>
+                <option value="R">Ruim</option>
+                <option value="B">Bom</option>
+                <option value="O">Ótimo</option>
+            </select></br>
+            <input type="submit" class="btn btn-info btn-sm btn-block" value="avalie">
+       </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!--JAVASCRIPT-->
+<script>
+//Essa função pe para saber de qual emprestimo está sendo avaliado atraves do id
+
+      function avaliacao(id_emprestimo){
+          input_emprestimo = document.getElementById('id_emprestimo');
+          input_emprestimo.value = id_emprestimo;
+      }
+
+</script>
+
+
+{% endblock %}
+

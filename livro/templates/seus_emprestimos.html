@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% load filtros %}
+
+{% block 'conteudo' %}</br></br>
+
+<div class="container">
+    <h3>Histórico dos seus emprestimos</h3>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                  <th scope="col">Livros</th>
+                  <th scope="col">Data do emprestimo</th>
+                  <th scope="col">Data de devolução</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for emprestimo in emprestimos %}
+                <tr>
+                    <td>  {{emprestimo.livro}}</td>
+                 
+                    <td>{{emprestimo.data_emprestimo}}</td>
+      
+                {% if emprestimo.data_devolucao %}
+                    <td>{{emprestimo.data_devolucao}}</td>
+                {% else %}
+                    <td>Você ainda não devolveu... <td>
+                {% endif %}
+            </tr>
+            {% endfor %}
+        </tbody>
+   </table>            
+</div>
+
+
+
+{% endblock %}
+
+
