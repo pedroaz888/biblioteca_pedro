@@ -42,6 +42,11 @@ INSTALLED_APPS = [
     'usuarios',
 ]
 
+
+
+CSRF_TRUSTED_ORIGINS = ['https://bibliotecapedro-production.up.railway.app']
+
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
