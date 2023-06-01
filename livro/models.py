@@ -48,4 +48,4 @@ class Emprestimo(models.Model):
             return f"{self.nome_cadastrado} |  {self.livro}"
     
 
-  
+ 

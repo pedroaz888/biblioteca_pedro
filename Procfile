@@ -1,3 +1,2 @@
-web: python manage.py migrate && gunicorn biblioteca.wsg
-
+web: gunicorn biblioteca.wsgi --log-file -
 
