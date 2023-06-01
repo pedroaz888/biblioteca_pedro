@@ -1,4 +1,4 @@
-# biblioteca_pedro
+# App Bibliotecca
 
 App de uma bibblioteca onde há possibilidade para: emprestar, cadastrar, excluir e avaliar os sus livros.
 
